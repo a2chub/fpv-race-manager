@@ -25,6 +25,15 @@ with open(RESULT_DATA, newline='') as total_csv:
   total_result = csv.reader(total_csv, delimiter=' ', quotechar='|')
 
 
+pilot = "A1":{
+        "name": "A1",
+        "heat1":{
+            "lap":[-1,-1,-1,-1],
+            "total":-1,
+            "unixtime":99999999
+            }
+        }
+
 
 
 
