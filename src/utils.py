@@ -1,4 +1,5 @@
 
+import json
 
 LapCnt = 4
 HEATLIST = ["A","B","C","D"]
@@ -17,7 +18,6 @@ def getResultInitData(lap_cnt=LapCnt):
         for ii in Pilot:
             _heat.append(i+ii)
         pilots.append( _heat )
-
 
     for i in pilots:
         for ii in i:
@@ -42,8 +42,10 @@ def makePilotsData(pilot_list, lap_cnt=LapCnt):
         ret.update(x)
     return ret
 
+def makeJson(jdata):
+    return json.dumps(jdata, indent=2, ensure_ascii=False)
 
 if __name__ == "__main__":
     print( getResultInitData() )
-    print( makePilotsData( Pilot ) )
+    print( makeJson( makePilotsData( sum(pilots,[]))) )
 
