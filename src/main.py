@@ -27,22 +27,26 @@ with open(DATA_result_file) as total_json:
 
 def parseCsvData(rawArr):
   _template = {
-          "name":"",
-          "heats":[{},{},{},{}]{
-          "total":-1,
-          "laps":[-1,-1,-1,-1],
-          "heat":-1,
-          'unixtime':-1
+          "heats-laps":    [[],[],[],[],[],[],[],[],[],[],[]],
+          "heats-total":   [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+          "heats-unixtime":[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
           }
   for pilotID in ret.keys():
       _tmp = rawArr[pilotID]
-      _template["name"] = pilotID
-      _template['heats'] =
-      _template['heat'] = _tmp[6]
-      _template['total'] = _tmp[4]
-      _template['laps'] = _tmp[0:4]
-      _template['unixtime'] = _tmp[5]
-      print(_template )
+
+      if pilotID in LAST_DATA:
+          _tgt_data = LAST_DATA[pilotID]
+      else:
+          _tgt_data = _template
+
+      _tgt_h_id = int(_tmp[6])
+      _tgt_data['heats-laps'][_tgt_h_id] = _tmp[0:4]
+      _tgt_data['heats-total'][_tgt_h_id] = _tmp[4]
+      _tgt_data['heats-unixtime'][_tgt_h_id] = _tmp[5]
+
+
+      LAST_DATA["pilots"][pilotID] = _tgt_data
+  return LAST_DATA
 
 if __name__ == "__main__":
 

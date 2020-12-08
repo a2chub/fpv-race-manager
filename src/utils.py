@@ -49,3 +49,32 @@ if __name__ == "__main__":
     print( getResultInitData() )
     print( makeJson( makePilotsData( sum(pilots,[]))) )
 
+
+
+'''{
+  "pilots": {
+    "Saqoosha": {
+      "heats": [ {
+        "laps":
+            [
+              22.2,
+              25.2,
+              23.9,
+              25.1
+            ],
+        "total":123,
+        'heat':1
+        },
+        "laps":
+            [
+              22.2,
+              25.2,
+              23.9,
+              25.1
+            ],
+        "total":123,
+        'heat':1
+      ]
+    }
+  }
+}'''
