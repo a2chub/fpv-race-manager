@@ -4,34 +4,44 @@ import csv
 import json
 
 DATA_PATH = '../data/data_csv/'
-DATA_lap_file = 'Latest-Result.csv'
+DATA_PATH = '../data/'
+DATA_lap_file = 'heat.csv'
 DATA_result_file = 'data.json'
 
 LAP_DATA = os.path.join(DATA_PATH, DATA_lap_file)
 RESULT_DATA = os.path.join(DATA_PATH, DATA_result_file)
 
 LAST_DATA = None
+CUR_CSV_RESULT = {}
 
-with open(LAP_DATA, newline='') as csvfile:
-  spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-  ret = {}
-  for row in spamreader:
-    _tmp = ', '.join(row).split(',')
-    _pilot = {_tmp[0]: _tmp[1:] }
-    ret.update(_pilot)
 
-with open(DATA_result_file) as total_json:
-    result_data = total_json.readlines()
-    x = "".join(result_data)
-    LAST_DATA = json.loads( x )
+def loadCSV():
+    global CUR_CSV_RESULT
+    with open(LAP_DATA, newline='') as csvfile:
+      spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+      ret = {}
+      for row in spamreader:
+        _tmp = ', '.join(row).split(',')
+        _pilot = {_tmp[0]: _tmp[1:] }
+        ret.update(_pilot)
+    CUR_CSV_RESULT = ret
+
+
+def loadLASTJSON():
+    global LAST_DATA
+    with open(DATA_result_file) as total_json:
+        result_data = total_json.readlines()
+        x = "".join(result_data)
+        LAST_DATA = json.loads( x )
+
 
 def parseCsvData(rawArr):
-  _template = {
-          "heats-laps":    [[],[],[],[],[],[],[],[],[],[],[]],
-          "heats-total":   [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-          "heats-unixtime":[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    global CUR_CSV_RESULT
+    _template = {
+          "heats":[{},{},{},{},{},{},{},{},{},{},{}]
           }
-  for pilotID in ret.keys():
+
+    for pilotID in CUR_CSV_RESULT.keys():
       _tmp = rawArr[pilotID]
 
       if pilotID in LAST_DATA:
@@ -39,17 +49,29 @@ def parseCsvData(rawArr):
       else:
           _tgt_data = _template
 
-      _tgt_h_id = int(_tmp[6])
-      _tgt_data['heats-laps'][_tgt_h_id] = _tmp[0:4]
-      _tgt_data['heats-total'][_tgt_h_id] = _tmp[4]
-      _tgt_data['heats-unixtime'][_tgt_h_id] = _tmp[5]
-
+      _h_id_idx = int(_tmp[6]) -1
+      _tgt_data['heats'][_h_id_idx]['heat'] = int(_tmp[6])
+      _tgt_data['heats'][_h_id_idx]['laps'] = [float(i) for i in _tmp[0:4]]
+      _tgt_data['heats'][_h_id_idx]['total'] = float(_tmp[4])
+      _tgt_data['heats'][_h_id_idx]['unixtime'] = int(_tmp[5])
 
       LAST_DATA["pilots"][pilotID] = _tgt_data
-  return LAST_DATA
+    return LAST_DATA
+
+
+def writeCurData():
+    global CUR_CSV_RESULT, LAST_DATA
+    with open(DATA_result_file, 'w') as write_json:
+        new_result = json.dumps(parseCsvData(CUR_CSV_RESULT), indent=2)
+        write_json.write( new_result )
+
+
 
 if __name__ == "__main__":
+    loadCSV()
+    loadLASTJSON()
+    writeCurData()
 
-  parseCsvData(ret)
+
 
 
