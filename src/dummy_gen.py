@@ -31,5 +31,5 @@ def getResultCsv(heat=""):
             f.write('\n')
 
 if __name__ == "__main__":
-    #makeResultCSV()
-    getResultCsv()
+    makeResultCSV()
+    #getResultCsv()

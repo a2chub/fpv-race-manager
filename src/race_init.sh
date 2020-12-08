@@ -1,0 +1,1 @@
+echo '{"pilots":{}}' > data.json

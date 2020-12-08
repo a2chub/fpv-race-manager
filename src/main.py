@@ -15,9 +15,9 @@ LAST_DATA = None
 CUR_CSV_RESULT = {}
 
 
-def loadCSV():
+def loadCSV(_LAP_DATA=LAP_DATA):
     global CUR_CSV_RESULT
-    with open(LAP_DATA, newline='') as csvfile:
+    with open(_LAP_DATA, newline='') as csvfile:
       spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
       ret = {}
       for row in spamreader:
@@ -36,7 +36,7 @@ def loadLASTJSON():
 
 
 def parseCsvData(rawArr):
-    global CUR_CSV_RESULT
+    global CUR_CSV_RESULT, LAST_DATA
     _template = {
           "heats":[{},{},{},{},{},{},{},{},{},{},{}]
           }
@@ -44,8 +44,8 @@ def parseCsvData(rawArr):
     for pilotID in CUR_CSV_RESULT.keys():
       _tmp = rawArr[pilotID]
 
-      if pilotID in LAST_DATA:
-          _tgt_data = LAST_DATA[pilotID]
+      if pilotID in LAST_DATA['pilots']:
+          _tgt_data = LAST_DATA['pilots'][pilotID]
       else:
           _tgt_data = _template
 
@@ -66,6 +66,8 @@ def writeCurData():
         write_json.write( new_result )
 
 
+def main()
+    pass
 
 if __name__ == "__main__":
     loadCSV()
