@@ -28,6 +28,7 @@ with open(DATA_result_file) as total_json:
 def parseCsvData(rawArr):
   _template = {
           "name":"",
+          "heats":[{},{},{},{}]{
           "total":-1,
           "laps":[-1,-1,-1,-1],
           "heat":-1,
@@ -36,13 +37,15 @@ def parseCsvData(rawArr):
   for pilotID in ret.keys():
       _tmp = rawArr[pilotID]
       _template["name"] = pilotID
+      _template['heats'] =
+      _template['heat'] = _tmp[6]
       _template['total'] = _tmp[4]
       _template['laps'] = _tmp[0:4]
-      _template['heat'] = _tmp[6]
       _template['unixtime'] = _tmp[5]
       print(_template )
-
 
 if __name__ == "__main__":
 
   parseCsvData(ret)
+
+
