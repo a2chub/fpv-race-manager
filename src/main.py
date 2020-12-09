@@ -1,13 +1,18 @@
+#!/usr/bin/env python
+# coding:utf-8
 
 import os
 import csv
 import json
 
-DATA_PATH = '../data/data_csv/'
-DATA_PATH = '../data/'
-DATA_lap_file = 'heat.csv'
-DATA_result_file = 'data.json'
+DATA_lap_file = 'heat.csv'      # QR appの出力データ
+DATA_result_file = 'data.json'  # 中間データファイル
+DATA_GS_CSV_file = 'data.csv'   # GSheetの読み込みフィアル
 
+DATA_PATH = '../data/data_csv/' # GoogleDriveのリンクPath
+
+# 各種Path変換
+DATA_gss_file = os.path.join(DATA_PATH, DATA_GS_CSV_file)
 LAP_DATA = os.path.join(DATA_PATH, DATA_lap_file)
 RESULT_DATA = os.path.join(DATA_PATH, DATA_result_file)
 
@@ -66,14 +71,51 @@ def writeCurData():
         write_json.write( new_result )
 
 
-def main()
-    pass
+def writeForGoogleSS_csv():
+    global CUR_CSV_RESULT, LAST_DATA
+    with open(DATA_result_file, 'w') as write_json:
+        new_result = json.dumps(parseCsvData(CUR_CSV_RESULT), indent=2)
+        write_json.write( new_result )
+
+
+def cnvtJson2Csv():
+    global LAST_DATA
+    all_pilot = list(LAST_DATA["pilots"].keys())
+    print( all_pilot )
+    _time_all = []
+    for _pilot in all_pilot:
+        one_pilot = LAST_DATA['pilots'][_pilot]
+        print( _pilot )
+        #print( one_pilot )
+        #print( one_pilot['heats'] )
+        _total_times = []
+        _complete_heat_cnt = 0
+        _total_times.append( _complete_heat_cnt )
+        for tt in one_pilot['heats'][:4]:
+            if "total" in tt:
+                _complete_heat_cnt += 1
+                _total_times.append( tt['total'] )
+            else:
+                _total_times.append( -1 )
+        _total_times[0] = _complete_heat_cnt
+        _total_times.insert(0, _pilot)
+        _time_all.append( _total_times )
+    with open(DATA_gss_file, 'w') as file:
+        writer = csv.writer(file, lineterminator='\n')
+        writer.writerows(_time_all)
+
+
+def main():
+    writeCurData()
 
 if __name__ == "__main__":
     loadCSV()
     loadLASTJSON()
-    writeCurData()
 
+    # QRappからのCSVを中間フォーマットにコンバート
+    main()
 
+    # 中間フォーマットをGSheetで読み込み可能なcsvにコンバート
+    cnvtJson2Csv()
 
 

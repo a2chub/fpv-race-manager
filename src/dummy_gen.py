@@ -12,7 +12,7 @@ def makeResultCSV(_num_heats=num_heats):
 
 def getResultCsv(heat=""):
     if heat=="":
-        f_name = '../data/heat.csv'
+        f_name = '../data/data_csv/heat.csv'
         heat = random.randint(1,4)
     else:
         f_name = '../data/heat{}.csv'.format(heat)
@@ -31,5 +31,5 @@ def getResultCsv(heat=""):
             f.write('\n')
 
 if __name__ == "__main__":
-    makeResultCSV()
-    #getResultCsv()
+    #makeResultCSV()
+    getResultCsv()
