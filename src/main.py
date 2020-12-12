@@ -2,10 +2,12 @@
 # coding:utf-8
 
 import os
+import sys
 import csv
 import json
+from copy import deepcopy
 
-DATA_lap_file = 'heat.csv'      # QR appの出力データ
+DATA_lap_file = 'Latest-Result.csv'      # QR appの出力データ
 DATA_result_file = 'data.json'  # 中間データファイル
 DATA_GS_CSV_file = 'data.csv'   # GSheetの読み込みフィアル
 
@@ -22,6 +24,7 @@ CUR_CSV_RESULT = {}
 
 def loadCSV(_LAP_DATA=LAP_DATA):
     global CUR_CSV_RESULT
+    print( LAP_DATA )
     with open(_LAP_DATA, newline='') as csvfile:
       spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
       ret = {}
@@ -30,6 +33,7 @@ def loadCSV(_LAP_DATA=LAP_DATA):
         _pilot = {_tmp[0]: _tmp[1:] }
         ret.update(_pilot)
     CUR_CSV_RESULT = ret
+    return CUR_CSV_RESULT
 
 
 def loadLASTJSON():
@@ -38,6 +42,7 @@ def loadLASTJSON():
         result_data = total_json.readlines()
         x = "".join(result_data)
         LAST_DATA = json.loads( x )
+    return LAST_DATA
 
 
 def parseCsvData(rawArr):
@@ -54,18 +59,20 @@ def parseCsvData(rawArr):
       else:
           _tgt_data = _template
 
-      _h_id_idx = int(_tmp[6]) -1
-      _tgt_data['heats'][_h_id_idx]['heat'] = int(_tmp[6])
-      _tgt_data['heats'][_h_id_idx]['laps'] = [float(i) for i in _tmp[0:4]]
-      _tgt_data['heats'][_h_id_idx]['total'] = float(_tmp[4])
-      _tgt_data['heats'][_h_id_idx]['unixtime'] = int(_tmp[5])
+      _h_id_idx = int(_tmp[5]) -1
+      _tgt_data['heats'][_h_id_idx]['heat'] = int(_tmp[5])
+      _tgt_data['heats'][_h_id_idx]['laps'] = [float(i) for i in _tmp[0:3]]
+      _tgt_data['heats'][_h_id_idx]['total'] = float(_tmp[3])
+      _tgt_data['heats'][_h_id_idx]['unixtime'] = int(_tmp[4])
+      print( _tgt_data )
 
-      LAST_DATA["pilots"][pilotID] = _tgt_data
+      LAST_DATA["pilots"][pilotID] = deepcopy(_tgt_data)
     return LAST_DATA
 
 
 def writeCurData():
     global CUR_CSV_RESULT, LAST_DATA
+    print( LAST_DATA )
     with open(DATA_result_file, 'w') as write_json:
         new_result = json.dumps(parseCsvData(CUR_CSV_RESULT), indent=2)
         write_json.write( new_result )
@@ -109,8 +116,13 @@ def main():
     writeCurData()
 
 if __name__ == "__main__":
-    loadCSV()
+    now_csv = loadCSV()
+    print("now csv")
+    print ( now_csv )
+
     loadLASTJSON()
+    print(" Last Data")
+    print( LAST_DATA )
 
     # QRappからのCSVを中間フォーマットにコンバート
     main()

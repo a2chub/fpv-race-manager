@@ -2,4 +2,4 @@
 
 
 source venv/bin/activate
-watch -n 5 ./race_heat_convert.sh
+watch -n 30 ./race_heat_convert.sh
